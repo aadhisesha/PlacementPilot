@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { handlePlacementAnalysis } from '../server/placementAnalysis';
-import { clientError } from '../server/gemini';
+import { handlePlacementAnalysis } from '../server/placementAnalysis.js';
+import { clientError } from '../server/gemini.js';
 import type { PlacementRequest } from '../src/types/placement';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

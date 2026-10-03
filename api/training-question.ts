@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { evaluateTrainingAnswer, generateTrainingQuestion } from '../server/training';
-import { clientError } from '../server/gemini';
+import { evaluateTrainingAnswer, generateTrainingQuestion } from '../server/training.js';
+import { clientError } from '../server/gemini.js';
 import type { TrainingRequest } from '../src/types/placement';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

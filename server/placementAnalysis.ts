@@ -8,9 +8,9 @@ import type {
   ResumeProfile,
   SkillGapResult,
 } from '../src/types/placement';
-import { geminiChatJson, GeminiRequestError, getGeminiConfig } from './gemini';
+import { geminiChatJson, GeminiRequestError, getGeminiConfig } from './gemini.js';
 
-export { GeminiRequestError } from './gemini';
+export { GeminiRequestError } from './gemini.js';
 
 function getModel() { return getGeminiConfig().model; }
 

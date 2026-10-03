@@ -6,7 +6,7 @@ import type {
   TrainingQuestion,
   TrainingRequest,
 } from '../src/types/placement';
-import { callGemini, now, runId } from './placementAnalysis';
+import { callGemini, now, runId } from './placementAnalysis.js';
 
 const questionSchema = {
   type: 'object', properties: {
