@@ -213,13 +213,16 @@ export async function handlePlacementAnalysis(req: PlacementRequest): Promise<Pl
   const workflowStart = Date.now(); const run = runId(); const steps: AgentStep[] = [];
   const push = (id: string, agent: string, purpose: string, status: AgentStep['status'], startedAt: string, completedAt?: string, durationMs?: number, tokens?: number, detail?: string) => steps.push({ id, agent, purpose, status, startedAt, completedAt, durationMs, tokens, detail });
   try {
-    const start1 = now();
-    const resumeResult = await callGemini(`You are the Resume Intelligence Agent. Extract only facts supported by the candidate resume. Do not invent skills, employers or experience.\nRESUME:\n${req.resumeText.slice(0, 24000)}`, resumeSchema);
-    const resume = normalizeResume(resumeResult.data); push('resume','Resume Intelligence Agent','Structuring candidate experience and skills','completed',start1,now(),resumeResult.durationMs,resumeResult.tokens);
-
-    const start2 = now();
-    const jobResult = await callGemini(`You are the Job Analysis Agent. Deeply decode the target role from the supplied job description. Separate explicit requirements from likely interview focus. Identify responsibilities, tech stack, soft skills, keywords, 5-8 high-impact focus areas, likely interview/assessment rounds, and example questions tightly grounded in the text. If rounds are not stated, label them as likely rather than certain in the wording. Do not invent employer facts.\nJOB DESCRIPTION:\n${req.jobDescription.slice(0, 24000)}`, jobSchema);
-    const job = normalizeJob(jobResult.data); push('job','Job Analysis Agent','Decoding role requirements, focus areas and interview signals','completed',start2,now(),jobResult.durationMs,jobResult.tokens);
+    const resumeStartedAt = now();
+    const jobStartedAt = now();
+    const [resumeResult, jobResult] = await Promise.all([
+      callGemini(`You are the Resume Intelligence Agent. Extract only facts supported by the candidate resume. Do not invent skills, employers or experience.\nRESUME:\n${req.resumeText.slice(0, 24000)}`, resumeSchema),
+      callGemini(`You are the Job Analysis Agent. Deeply decode the target role from the supplied job description. Separate explicit requirements from likely interview focus. Identify responsibilities, tech stack, soft skills, keywords, 5-8 high-impact focus areas, likely interview/assessment rounds, and example questions tightly grounded in the text. If rounds are not stated, label them as likely rather than certain in the wording. Do not invent employer facts.\nJOB DESCRIPTION:\n${req.jobDescription.slice(0, 24000)}`, jobSchema),
+    ]);
+    const resume = normalizeResume(resumeResult.data);
+    push('resume','Resume Intelligence Agent','Structuring candidate experience and skills','completed',resumeStartedAt,now(),resumeResult.durationMs,resumeResult.tokens);
+    const job = normalizeJob(jobResult.data);
+    push('job','Job Analysis Agent','Decoding role requirements, focus areas and interview signals','completed',jobStartedAt,now(),jobResult.durationMs,jobResult.tokens);
 
     const start3 = now();
     const gapResult = await callGemini(`You are the Skill Gap Agent. Compare candidate evidence against the target role. Use only supplied evidence, do not infer proficiency from job titles alone, and avoid overconfident scores. Identify matched, partial and missing capabilities. For priority gaps, give practical actions a student can complete before the interview.\nCANDIDATE:\n${JSON.stringify(resume)}\nTARGET ROLE:\n${JSON.stringify(job)}`, gapSchema, 'Return valid JSON with an integer matchPercentage from 0 to 100 and concise arrays.');
