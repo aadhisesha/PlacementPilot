@@ -1,86 +1,307 @@
+
 # PlacementPilot
 
-PlacementPilot is a stateless, multi-agent AI assistant for campus placement preparation with a guided, single-page placement journey.
+**An AI-powered, multi-agent placement preparation platform that transforms your resume and target job description into a personalized interview preparation and career readiness plan.**
 
-## What it does
+[Take a visit to PlacementPilot](https://placement-pilot-lake.vercel.app/) 
 
-Give it:
-- a resume
-- a target job description
-- a career goal
+---
 
-It orchestrates specialized agents to produce:
-- structured resume intelligence
-- target-role analysis
-- skill-gap analysis
-- interview questions
-- a seven-day preparation plan
-- a transparent agent execution trace
+## Overview
 
-## Why it is stateless
+PlacementPilot is an AI-powered placement preparation assistant designed to help students and job seekers prepare strategically for technical interviews and job applications.
 
-There is intentionally no database. The serverless runtime is ephemeral, while the browser keeps session history in localStorage. This reduces infrastructure and makes deployment simple for a course assignment.
+Instead of relying on generic interview questions and study plans, PlacementPilot analyzes a candidate's resume, target job description, and career goals to generate personalized insights, identify skill gaps, recommend learning paths, and simulate interview experiences.
 
-## Stack
+The platform uses a multi-agent architecture in which specialized AI components handle different stages of the placement preparation workflow. These components work together through a coordinated application workflow to provide a structured and personalized preparation experience.
 
-- React + Vite + TypeScript
-- Custom CSS design system
-- Vercel serverless functions
-- Gemini API (`gemini-2.5-flash` by default)
-- pdfjs-dist for local PDF text extraction
-- localStorage for session persistence
+## Key Features
 
-## Run locally
+- **Resume Intelligence:** Extracts and analyzes relevant information from uploaded resumes to identify skills, experience, projects, and technical strengths.
+- **Job Description Analysis:** Analyzes target job descriptions to identify required skills, technologies, responsibilities, and role expectations.
+- **Skill Gap Analysis:** Compares a candidate's existing skills with job requirements to identify strengths and areas that need improvement.
+- **Placement Analytics:** Presents insights into a candidate's job readiness, skill coverage, and preparation progress.
+- **Personalized Preparation Plan:** Generates a structured preparation roadmap based on the candidate's profile, skill gaps, and target role.
+- **Interview Question Generation:** Produces role-specific technical and behavioral interview questions.
+- **Role-Based Training:** Provides interactive practice sessions tailored to the selected job role and its technical requirements.
+- **AI Answer Evaluation:** Evaluates submitted answers and provides feedback on correctness, relevance, completeness, and areas for improvement.
+- **Mock Interview:** Simulates interview scenarios to help candidates practice responding to questions.
+- **Readiness Summary:** Generates a consolidated overview of preparation results, highlighting strengths and remaining improvement areas.
+- **Execution Monitoring:** Displays workflow progress, agent execution steps, processing duration, and available model usage information.
+- **Demo Mode:** Supports a demonstration workflow without requiring a live AI provider connection.
+
+## Multi-Agent Architecture
+
+PlacementPilot uses specialized logical agents to divide the placement preparation process into manageable tasks.
+
+Each agent focuses on a specific responsibility, while the application coordinates the overall workflow.
+
+| Agent | Responsibility |
+|---|---|
+| Resume Intelligence Agent | Extracts candidate information, skills, projects, and experience from resumes. |
+| Job Analysis Agent | Identifies job requirements, technical skills, and role expectations from job descriptions. |
+| Skill Gap Agent | Compares candidate capabilities with job requirements and identifies missing skills. |
+| Interview Preparation Agent | Generates relevant interview questions and preparation recommendations. |
+| Career Planner Agent | Creates personalized learning paths and preparation roadmaps. |
+| Role Trainer Agent | Conducts role-specific practice and training sessions. |
+| Training Evaluation Agent | Evaluates candidate answers and provides structured feedback. |
+
+These agents are application-level components rather than separately deployed autonomous services. Their execution is coordinated through the platform's workflow.
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    A[Candidate] --> B[React Frontend]
+    B --> C[Resume and Job Description Input]
+    C --> D[Vercel Serverless API]
+    
+    D --> E[Workflow Orchestrator]
+    
+    E --> F[Resume Intelligence Agent]
+    E --> G[Job Analysis Agent]
+    
+    F --> H[Skill Gap Analysis]
+    G --> H
+    
+    H --> I[Career Planner Agent]
+    H --> J[Interview Preparation Agent]
+    
+    I --> K[Preparation Plan]
+    J --> L[Interview Questions]
+    
+    K --> M[Role Trainer Agent]
+    L --> M
+    
+    M --> N[Training Evaluation Agent]
+    N --> O[Readiness Summary]
+    
+    O --> P[Frontend Results and Monitoring]
+```
+
+## Application Workflow
+
+### 1. Candidate Profile Input
+
+The candidate provides:
+- Resume in PDF format
+- Target job description
+- Career goals or preferred role
+
+Resume text is extracted locally using PDF.js before being processed by the application.
+
+### 2. Resume and Job Analysis
+
+The platform analyzes the resume and job description to identify:
+- Technical skills
+- Programming languages and frameworks
+- Projects and experience
+- Required job competencies
+- Role-specific expectations
+
+### 3. Skill Gap Identification
+
+The platform compares the candidate's current capabilities with the target job requirements.
+
+The analysis identifies:
+- Existing strengths
+- Missing or underdeveloped skills
+- Important technologies to focus on
+- Areas requiring additional preparation
+
+### 4. Personalized Preparation
+
+Based on the analysis, PlacementPilot generates:
+- A personalized preparation roadmap
+- Priority topics
+- Recommended practice activities
+- Technical and behavioral interview questions
+
+### 5. Interactive Role Training
+
+Candidates can practice questions relevant to their target role and receive AI-generated feedback.
+
+The training workflow helps candidates identify weaknesses and improve their answers through repeated practice.
+
+### 6. Evaluation and Readiness Summary
+
+The evaluation workflow assesses practice responses and consolidates preparation insights into a readiness summary.
+
+This gives candidates a clearer understanding of their current preparation level and the areas they should focus on next.
+
+## Technology Stack
+
+| Category | Technologies |
+|---|---|
+| Frontend | React, Vite, TypeScript |
+| Styling | Custom CSS |
+| Backend | Vercel Serverless Functions |
+| AI Model | Google Gemini API |
+| Document Processing | PDF.js |
+| Language | TypeScript |
+| Deployment | Vercel |
+| Session Persistence | Browser localStorage |
+
+## Stateless Backend Design
+
+PlacementPilot uses a stateless serverless backend.
+
+Each API request is processed independently, without relying on persistent server-side session storage.
+
+Key characteristics include:
+- No traditional application database
+- No server-side resume storage
+- No authentication system in the current implementation
+- Server-side AI provider key management
+- Client-side session persistence using localStorage
+- Independent serverless API execution
+
+This design keeps the application lightweight and simplifies deployment.
+
+## API Endpoints
+
+The application exposes the following API endpoints.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/health` | Checks API availability. |
+| POST | `/api/placement-analysis` | Processes placement analysis requests. |
+| POST | `/api/training-question` | Generates or processes role-specific training questions. |
+
+The backend validates incoming data and handles AI model interactions through server-side API functions.
+
+## Monitoring and Execution Tracking
+
+PlacementPilot includes an execution monitoring interface that provides visibility into the preparation workflow.
+
+Depending on the available execution data, it displays:
+- Current workflow status
+- Individual agent execution steps
+- Processing duration
+- Model and token usage information
+- Validation results
+- Recovery and error information
+
+This helps users understand how the application processes their placement preparation requests.
+
+## Demo Mode
+
+PlacementPilot supports a demo mode that allows users to explore the application without making live AI API calls.
+
+To enable demo mode, configure:
+
+```env
+DEMO_MODE=true
+```
+
+Demo mode is useful for testing the user interface, demonstrating application workflows, and exploring the platform without depending on an active AI provider connection.
+
+## Getting Started
+
+### Prerequisites
+
+Ensure that the following tools are installed:
+
+- Node.js
+- npm
+- Git
+- Google Gemini API key for live AI functionality
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/aadhisesha/PlacementPilot.git
+cd PlacementPilot
+```
+
+### Install Dependencies
 
 ```bash
 npm install
-cp .env.example .env
-npm run dev:full
 ```
 
-On Windows PowerShell:
+### Configure Environment Variables
 
-```powershell
-npm run dev:full
+Create a `.env` file in the project root and configure the required environment variables.
+
+For live AI functionality, provide your Gemini API key using the environment variable expected by the backend.
+
+For demonstration purposes, demo mode can be enabled:
+
+```env
+DEMO_MODE=true
 ```
 
-Set `GEMINI_API_KEY` in the server-side `.env` file. All placement analysis, question generation and answer evaluation requests are sent to Gemini.
-Run `npm run test:gemini` for the live Gemini integration and end-to-end workflow check.
+Do not expose API keys in frontend code or commit environment files containing secrets.
 
-## Build
+### Run the Development Server
+
+```bash
+npm run dev
+```
+
+Open the local URL provided by Vite in your browser.
+
+### Build for Production
 
 ```bash
 npm run build
 ```
 
-## Deploy
-
-Push to GitHub, import into Vercel, and add `GEMINI_API_KEY` as a server-side environment variable. See `docs/DEPLOYMENT.md`.
-
-## Frontend design direction
-
-The UI was redesigned using the Taste Skill direction: a high-motion, dark-tech workspace with strong typography, asymmetric hero composition, one locked accent color, intentional motion, and complete interactive states. See `.agents/skills/design-taste-frontend/README.md`.
-
-## UI direction
-
-The current build is a single-page, minimal career intelligence workspace. The user moves from role analysis → personal analytics → role analysis → mock test → mock interview → agent trace without a sidebar. Motion is restrained and used to communicate state.
-
-Taste Skill reference: `design-taste-frontend` from Leonxlnx/taste-skill. Official install command:
-
-```bash
-npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"
-```
-
-## Assignment documents
-
-- `docs/ASSIGNMENT_PROMPT.md` — detailed build prompt
-- `docs/ARCHITECTURE.md` — architecture and agent design
-- `docs/DEPLOYMENT.md` — local and Vercel deployment
-- `SUBMISSION.md` — submission/demo checklist
+The production build is generated in the `dist` directory.
 
 
-## UX model
+## Security and Data Handling
 
-The main application uses a single continuous page instead of a persistent sidebar. The flow is intentionally sequential: placement snapshot → role intelligence → preparation priorities → assessment map → example questions → role training → mock interview. A compact sticky progress bar tracks the current chapter, while each chapter includes Continue and Skip actions so students can move through the experience without manually searching for the next step.
+PlacementPilot follows several basic security and data-handling practices:
 
-The visual system uses a restrained light palette with section-specific accent families, editorial spacing, subtle borders, and motion only where it communicates hierarchy, progress, navigation, or state.
+- AI provider credentials are managed on the server side.
+- Resume and job description inputs are treated as untrusted user-provided content.
+- API inputs and model outputs are validated where applicable.
+- Sensitive information should not be included in application logs.
+- Resume data is not stored in a persistent server-side database.
+- Browser localStorage is used for client-side session persistence.
+
+The current implementation does not include authentication, centralized rate limiting, or long-term telemetry. These remain potential areas for future development.
+
+## Current Limitations
+
+- AI-generated evaluations may not always reflect the judgment of a human interviewer.
+- Resume extraction quality depends on the structure and readability of the uploaded PDF.
+- The quality of generated preparation plans depends on the supplied resume, job description, and AI model response.
+- The current system does not provide persistent cloud-based candidate profiles.
+- There is no built-in authentication or multi-user management.
+- Readiness results should be treated as guidance rather than a guaranteed prediction of placement success.
+
+## Future Enhancements
+
+Potential future improvements include:
+
+- Persistent candidate profiles and preparation history
+- Advanced progress tracking and learning analytics
+- Support for additional resume formats
+- More detailed coding interview practice
+- Integration with coding assessment platforms
+- Adaptive question difficulty based on candidate performance
+- Improved interview evaluation using structured scoring rubrics
+- Personalized revision schedules
+- Support for multiple AI model providers
+- More comprehensive observability and performance monitoring
+
+## Responsible Use
+
+PlacementPilot is intended to support learning and interview preparation.
+
+Its AI-generated recommendations, evaluations, and readiness summaries are informational tools. They should be used alongside independent study, practical experience, and human feedback.
+
+The platform does not guarantee interview success, job offers, or placement outcomes.
+
+## Author
+
+**Aadhisesha D**
+
+GitHub: [aadhisesha](https://github.com/aadhisesha)
+
+---
+
+**PlacementPilot — Prepare smarter. Identify gaps. Build confidence.**
